@@ -1,0 +1,20 @@
+{
+  "name": "odooxgcet",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/ShadowPlayerOdoo/OdooxGCET#readme",
+  "bugs": {
+    "url": "https://github.com/ShadowPlayerOdoo/OdooxGCET/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ShadowPlayerOdoo/OdooxGCET.git"
+  },
+  "license": "ISC",
+  "author": "Harsh Jasani",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
