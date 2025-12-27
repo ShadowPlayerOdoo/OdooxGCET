@@ -1,12 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { products } from '../data';
 import { FaFilter } from 'react-icons/fa';
 
 const Home = () => {
+  const [products, setProducts] = useState([]);
   const [filter, setFilter] = useState("All");
+  const [loading, setLoading] = useState(true);
 
-  // Get unique categories
+  // FETCH DATA FROM SERVER
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/products');
+        const data = await response.json();
+        setProducts(data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  if (loading) return <div className="container"><h2>Loading products...</h2></div>;
+
   const categories = ["All", ...new Set(products.map(p => p.category))];
   
   const filteredProducts = filter === "All" 
@@ -24,7 +42,6 @@ const Home = () => {
       </section>
 
       <div className="container">
-        {/* Filter Bar */}
         <div className="filter-bar">
           <h3><FaFilter /> Filter by:</h3>
           <div>
@@ -40,11 +57,10 @@ const Home = () => {
           </div>
         </div>
 
-        {/* Grid */}
         <div className="product-grid">
           {filteredProducts.map((product) => (
-            <div key={product.id} className="product-card">
-              <Link to={`/product/${product.id}`} style={{textDecoration: 'none'}}>
+            <div key={product._id} className="product-card">
+              <Link to={`/product/${product._id}`} style={{textDecoration: 'none'}}>
                 <img src={product.image} alt={product.name} />
                 <div className="card-body">
                   <h3>{product.name}</h3>

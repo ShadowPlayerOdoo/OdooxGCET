@@ -1,42 +1,55 @@
-import React, { createContext, useState } from 'react';
-import { products } from '../data';
-import { toast } from 'react-toastify'; // Import toast
+import React, { createContext, useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 
 export const ShopContext = createContext(null);
 
-const getDefaultCart = () => {
-  let cart = {};
-  for (let i = 1; i < products.length + 1; i++) {
-    cart[i] = 0;
-  }
-  return cart;
-};
-
 export const ShopContextProvider = (props) => {
-  const [cartItems, setCartItems] = useState(getDefaultCart());
+  // Load cart from LocalStorage on startup (so data stays after refresh)
+  const [cartItems, setCartItems] = useState(() => {
+    const savedCart = localStorage.getItem('cartItems');
+    return savedCart ? JSON.parse(savedCart) : {};
+  });
 
-  const addToCart = (itemId) => {
-    setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] + 1 }));
-    toast.success("Added to Cart!"); // Show Popup
+  // Save to LocalStorage whenever cart changes
+  useEffect(() => {
+    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+  }, [cartItems]);
+
+ const addToCart = (itemId) => {
+    // Check if user is logged in
+    const userInfo = localStorage.getItem('userInfo');
+    
+    if (!userInfo) {
+      toast.error("Please Login to add items to cart");
+      return; // Stop here, don't add item
+    }
+
+    // Existing logic...
+    setCartItems((prev) => ({
+      ...prev,
+      [itemId]: (prev[itemId] || 0) + 1
+    }));
+    toast.success("Added to Cart!");
   };
-
+  
   const removeFromCart = (itemId) => {
-    setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] - 1 }));
+    setCartItems((prev) => {
+      const newCart = { ...prev };
+      if (newCart[itemId] > 1) {
+        newCart[itemId] -= 1;
+      } else {
+        delete newCart[itemId];
+      }
+      return newCart;
+    });
     toast.info("Removed from Cart");
   };
 
-  const getTotalCartAmount = () => {
-    let totalAmount = 0;
-    for (const item in cartItems) {
-      if (cartItems[item] > 0) {
-        let itemInfo = products.find((product) => product.id === Number(item));
-        totalAmount += cartItems[item] * itemInfo.price;
-      }
-    }
-    return totalAmount;
-  };
-
-  const contextValue = { cartItems, addToCart, removeFromCart, getTotalCartAmount };
+  // We need to fetch products to calculate total, 
+  // but for now let's just expose the cartItems and let components handle math
+  // or you can pass the 'products' array to this context if available.
+  
+  const contextValue = { cartItems, addToCart, removeFromCart };
 
   return (
     <ShopContext.Provider value={contextValue}>

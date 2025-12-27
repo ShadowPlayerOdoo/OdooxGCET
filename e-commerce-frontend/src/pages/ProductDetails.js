@@ -1,19 +1,25 @@
-// src/pages/ProductDetails.js
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { products } from '../data';
-import { ShopContext } from '../context/ShopContext'; // Import Context
+import { ShopContext } from '../context/ShopContext';
 
 const ProductDetails = () => {
   const { id } = useParams();
-  const product = products.find((p) => p.id === parseInt(id));
-  const { addToCart, cartItems } = useContext(ShopContext); // Get function
+  const { addToCart, cartItems } = useContext(ShopContext);
+  const [product, setProduct] = useState(null);
 
-  const cartAmount = cartItems[product.id];
+  // Fetch single product from list or API (Simpler to just fetch list for now)
+  useEffect(() => {
+    fetch('http://localhost:5000/api/products')
+      .then(res => res.json())
+      .then(data => {
+        const found = data.find(p => p._id === id);
+        setProduct(found);
+      });
+  }, [id]);
 
-  if (!product) {
-    return <div className="container"><h2>Product not found</h2></div>;
-  }
+  if (!product) return <div className="container"><h2>Loading...</h2></div>;
+
+  const cartAmount = cartItems[product._id];
 
   return (
     <div className="container product-details-page">
@@ -29,7 +35,7 @@ const ProductDetails = () => {
           <p className="description">{product.description}</p>
           
           <div className="action-buttons">
-            <button className="add-to-cart-btn" onClick={() => addToCart(product.id)}>
+            <button className="add-to-cart-btn" onClick={() => addToCart(product._id)}>
               Add to Cart {cartAmount > 0 && `(${cartAmount})`}
             </button>
             <button className="buy-now-btn">Buy Now</button>

@@ -14,6 +14,9 @@ import Cart from './pages/Cart';
 import { ShopContextProvider } from './context/ShopContext';
 import './App.css';
 
+import Login from './pages/Login';      // <--- ADD THIS
+import Register from './pages/Register'; // <--- ADD THIS
+
 function App() {
   return (
     <div className="App">
@@ -24,6 +27,11 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/product/:id" element={<ProductDetails />} />
             <Route path="/cart" element={<Cart />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/product/:id" element={<ProductDetails />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/login" element={<Login />} />       {/* <--- ADD THIS */}
+            <Route path="/register" element={<Register />} /> {/* <--- ADD THIS */}
           </Routes>
           <Footer />
         </Router>
