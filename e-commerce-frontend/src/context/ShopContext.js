@@ -1,10 +1,9 @@
-// src/context/ShopContext.js
 import React, { createContext, useState } from 'react';
 import { products } from '../data';
+import { toast } from 'react-toastify'; // Import toast
 
 export const ShopContext = createContext(null);
 
-// Create an empty cart object {1: 0, 2: 0, 3: 0, ...}
 const getDefaultCart = () => {
   let cart = {};
   for (let i = 1; i < products.length + 1; i++) {
@@ -18,10 +17,12 @@ export const ShopContextProvider = (props) => {
 
   const addToCart = (itemId) => {
     setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] + 1 }));
+    toast.success("Added to Cart!"); // Show Popup
   };
 
   const removeFromCart = (itemId) => {
     setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] - 1 }));
+    toast.info("Removed from Cart");
   };
 
   const getTotalCartAmount = () => {

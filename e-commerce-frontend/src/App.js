@@ -1,11 +1,17 @@
-// src/App.js
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+// Components
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+
+// Pages
 import Home from './pages/Home';
 import ProductDetails from './pages/ProductDetails';
-import Cart from './pages/Cart'; // Import Cart
-import { ShopContextProvider } from './context/ShopContext'; // Import Provider
+import Cart from './pages/Cart';
+import { ShopContextProvider } from './context/ShopContext';
 import './App.css';
 
 function App() {
@@ -19,7 +25,9 @@ function App() {
             <Route path="/product/:id" element={<ProductDetails />} />
             <Route path="/cart" element={<Cart />} />
           </Routes>
+          <Footer />
         </Router>
+        <ToastContainer position="bottom-right" theme="dark" />
       </ShopContextProvider>
     </div>
   );
