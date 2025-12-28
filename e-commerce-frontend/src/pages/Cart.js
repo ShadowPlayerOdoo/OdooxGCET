@@ -7,11 +7,11 @@ const Cart = () => {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
 
-  // Fetch products to verify details (Price, Image, etc.)
   useEffect(() => {
-    fetch('https://mern-e-comm-njy2.onrender.com/api/products')
+    fetch('http://localhost:5000/api/products')
       .then(res => res.json())
-      .then(data => setProducts(data));
+      .then(data => setProducts(data))
+      .catch(err => console.log(err));
   }, []);
 
   const totalAmount = products.reduce((acc, product) => {
@@ -21,41 +21,60 @@ const Cart = () => {
     return acc;
   }, 0);
 
-  return (
-    <div className="container cart-page">
-      <h1>Your Cart Items</h1>
-      
-      <div className="cart-items">
-        {products.map((product) => {
-          if (cartItems[product._id]) {
-            return (
-              <div className="cart-item" key={product._id}>
-                <img src={product.image} alt={product.name} />
-                <div className="description">
-                  <p><b>{product.name}</b></p>
-                  <p>${product.price}</p>
-                  <div className="count-handler">
-                    <button onClick={() => removeFromCart(product._id)}> - </button>
-                    <input value={cartItems[product._id]} readOnly />
-                    <button onClick={() => addToCart(product._id)}> + </button>
-                  </div>
-                </div>
-              </div>
-            );
-          }
-          return null;
-        })}
-      </div>
+  const checkoutHandler = () => {
+     // Check if logged in
+     const userInfo = localStorage.getItem('userInfo');
+     if (!userInfo) {
+         navigate('/login');
+     } else {
+         navigate('/place-order');
+     }
+  };
 
-      {totalAmount > 0 ? (
-        <div className="checkout">
-          <p>Subtotal: ${totalAmount.toFixed(2)}</p>
-          <button onClick={() => navigate("/")}> Continue Shopping </button>
-          <button style={{backgroundColor: '#e74c3c'}}> Checkout </button>
+  return (
+    <div className="container mt-5">
+      <h2>Your Cart Items</h2>
+      <div className="row">
+        <div className="col-md-8">
+            {products.map((product) => {
+                if (cartItems[product._id] > 0) {
+                    return (
+                        <div className="card mb-3" key={product._id}>
+                            <div className="row g-0 align-items-center">
+                                <div className="col-md-2 p-2">
+                                    <img src={product.image} className="img-fluid rounded-start" alt={product.name} />
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="card-body">
+                                        <h5 className="card-title">{product.name}</h5>
+                                        <p className="card-text">${product.price}</p>
+                                    </div>
+                                </div>
+                                <div className="col-md-4 text-center">
+                                    <button className="btn btn-sm btn-outline-danger me-2" onClick={() => removeFromCart(product._id)}>-</button>
+                                    <span className="fw-bold">{cartItems[product._id]}</span>
+                                    <button className="btn btn-sm btn-outline-success ms-2" onClick={() => addToCart(product._id)}>+</button>
+                                </div>
+                            </div>
+                        </div>
+                    )
+                }
+                return null;
+            })}
         </div>
-      ) : (
-        <h3>Your Cart is Empty</h3>
-      )}
+        <div className="col-md-4">
+            <div className="card p-3">
+                <h4>Subtotal: ${totalAmount.toFixed(2)}</h4>
+                <button 
+                    onClick={checkoutHandler}
+                    className="btn btn-dark mt-3" 
+                    disabled={totalAmount === 0}
+                >
+                    Proceed to Checkout
+                </button>
+            </div>
+        </div>
+      </div>
     </div>
   );
 };

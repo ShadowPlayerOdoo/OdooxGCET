@@ -1,48 +1,63 @@
 import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { FaShoppingCart, FaUser } from 'react-icons/fa';
 import { ShopContext } from '../context/ShopContext';
-import { FaShoppingCart, FaUser, FaSignOutAlt } from 'react-icons/fa';
 
 const Navbar = () => {
   const { cartItems } = useContext(ShopContext);
-  const itemCount = Object.values(cartItems).reduce((a, b) => a + b, 0);
   const navigate = useNavigate();
-
-  // Check if user is logged in
+  
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+  const totalItems = Object.values(cartItems).reduce((a, b) => a + b, 0);
 
   const logoutHandler = () => {
     localStorage.removeItem('userInfo');
-    localStorage.removeItem('cartItems'); // Clear cart on logout
     navigate('/login');
     window.location.reload();
   };
 
   return (
-    <nav className="navbar">
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <div className="container">
-        <Link to="/" className="logo">ShopMERN</Link>
-        <div className="nav-links">
-          <Link to="/">Home</Link>
-          
-          {/* CONDITIONAL RENDERING: Only show Cart if user is logged in */}
-          {userInfo && (
-            <Link to="/cart">
-              <FaShoppingCart /> 
-              {itemCount > 0 && <span className="cart-badge">{itemCount}</span>}
-            </Link>
-          )}
+        <Link className="navbar-brand" to="/">TechShop</Link>
+        
+        <div className="collapse navbar-collapse">
+          <ul className="navbar-nav ms-auto align-items-center">
+            <li className="nav-item">
+              <Link className="nav-link" to="/">Home</Link>
+            </li>
+            
+            <li className="nav-item">
+              <Link className="nav-link position-relative" to="/cart">
+                <FaShoppingCart size={20} />
+                {totalItems > 0 && (
+                  <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    {totalItems}
+                  </span>
+                )}
+              </Link>
+            </li>
 
-          {userInfo ? (
-            <>
-              <span style={{ color: '#ecf0f1', marginLeft: '20px' }}>Hi, {userInfo.name.split(' ')[0]}</span>
-              <button onClick={logoutHandler} className="login-btn" style={{ background: 'transparent', border: '1px solid white' }}>
-                <FaSignOutAlt /> Logout
-              </button>
-            </>
-          ) : (
-            <Link to="/login"><FaUser /> Login</Link>
-          )}
+            {userInfo ? (
+              <>
+                <li className="nav-item">
+                    <Link className="nav-link" to="/my-orders">My Orders</Link>
+                </li>
+                <li className="nav-item dropdown">
+                  <span className="nav-link dropdown-toggle" role="button">
+                    <FaUser className="me-1"/> {userInfo.name}
+                  </span>
+                </li>
+                <li className="nav-item">
+                    <button onClick={logoutHandler} className="btn btn-outline-light btn-sm ms-2">Logout</button>
+                </li>
+              </>
+            ) : (
+              <li className="nav-item">
+                <Link className="nav-link" to="/login">Login</Link>
+              </li>
+            )}
+          </ul>
         </div>
       </div>
     </nav>
