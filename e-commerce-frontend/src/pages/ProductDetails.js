@@ -9,7 +9,7 @@ const ProductDetails = () => {
 
   // Fetch single product from list or API (Simpler to just fetch list for now)
   useEffect(() => {
-    fetch('http://localhost:5000/api/products')
+    fetch('https://mern-e-comm-njy2.onrender.com/api/products')
       .then(res => res.json())
       .then(data => {
         const found = data.find(p => p._id === id);
